@@ -1,331 +1,46 @@
-# My homelab-media-docker-stack
-#
-# Services
-#   Traefik     - Proxy server
-#   Heimdall    - Dashboard
-#   Plex        - Media player
-#   Tautulli    - Plex statistics
-#   Ombi        - Allows users to request shows/movies to add to Plex/Sonarr/Radarr
-#   Sonarr      - Searches for TV shows to download
-#   Radarr      - Searches for movies to download
-#   NZBget      - Usenet downloader
-#   NZBHydra    - Usenet indexer consolidation
-#   Jackett     - Allows Sonarr/Radarr to search torrent trackers
-#   Deluge      - Torrent downloader (uses nginx container as frontend proxy)
-#   VPN         - VPN client to route torrent (deluge) traffic through
-
-version: '3'
-
+version: "3"
 services:
-
-# Heimdall
-
-    heimdall:
-        image: linuxserver/heimdall:latest
-        container_name: heimdall
-        volumes:
-            - /mnt/media/@data/heimdall/config:/config
-        environment:
-            - PUID=1000
-            - PGID=1000
-            - TZ=America/New_York
-        labels:
-            - traefik.backend=heimdall
-            - traefik.frontend.rule=Host:heimdall.${DOMAIN}
-            - traefik.docker.network=traefik
-        networks:
-            - traefik
-        expose:
-            - 80
-            - 443
-        restart: always
-
-# Plex
-
+    share:
+      image: dperson/samba
+      container_name: samba
+      volumes:
+        - /mnt/tub:/mount
+      ports:
+        - 139:139
+        - 445:445
+      restart: always
+    dashboard:
+      image: linuxserver/heimdall
+      container_name: heimdall
+      volumes:
+        - /mnt/tub/config/heimdall:/config
+      ports:
+        - 80:80
+        - 443:443
+      restart: always
     plex:
-        image: linuxserver/plex:latest
-        container_name: plex
-        hostname: mothership
-        volumes:
-            - /mnt/media/@data/plex/config:/config
-            - /mnt/media/@data/Media/TV:/data/tvshows
-            - /mnt/media/@data/Media/Movies:/data/movies
-            - /mnt/media/@data/plex/transcode:/transcode
-        environment:
-            - PUID=1000
-            - PGID=1000
-            - TZ=America/New_York
-        labels:
-            - traefik.backend=plex
-            - traefik.frontend.rule=Host:plex.${DOMAIN}
-            - traefik.docker.network=traefik
-            - traefik.port=32400
-        networks:
-            - traefik
-        ports:
-            - 32400:32400
-            - 3005:3005
-            - 8324:8324
-            - 1900:1900/udp
-            - 32410:32410/udp
-            - 32412:32412/udp
-            - 32413:32413/udp
-            - 32414:32414/udp
-        restart: always
-
-    tautulli:
-        image: tautulli/tautulli:latest
-        container_name: tautulli
-        depends_on:
-            - plex
-        volumes:
-            - /mnt/media/@data/tautulli/config:/config
-            - /mnt/media/@data/plex/config/Library/Application\ Support/Plex\ Media\ Server/Logs:/logs:ro
-        environment:
-            - PUID=1000
-            - PGID=1000
-            - TZ=America/New_York
-        labels:
-            - traefik.backend=tautulli
-            - traefik.frontend.rule=Host:tautulli.${DOMAIN}
-            - traefik.docker.network=traefik
-            - traefik.port=8181
-        networks:
-            - traefik
-        expose:
-            - 8181
-        restart: always
-
-    ombi:
-        image: linuxserver/ombi:latest
-        container_name: ombi
-        volumes:
-            - /mnt/media/@data/ombi/config:/config
-        environment:
-            - PUID=1000
-            - PGID=1000
-            - TZ=America/New_York
-        labels:
-            - traefik.backend=ombi
-            - traefik.frontend.rule=Host:ombi.${DOMAIN}
-            - traefik.docker.network=traefik
-            - traefik.port=3579
-        networks:
-            - traefik
-        expose:
-            - 3579
-        restart: always
-
-# Searchers
-
-    sonarr:
-        image: linuxserver/sonarr:latest
-        container_name: sonarr
-        volumes:
-            - /etc/localtime:/etc/localtime:ro
-            - /mnt/media/@data/sonarr/config:/config
-            - /mnt/media/@data/Media/TV:/tv
-            - /mnt/media/@data/nzbget/downloads:/downloads
-        environment:
-            - PUID=1000
-            - PGID=1000
-            - TZ=America/New_York
-        labels:
-            - traefik.backend=sonarr
-            - traefik.frontend.rule=Host:sonarr.${DOMAIN}
-            - traefik.docker.network=traefik
-            - traefik.port=8989
-        networks:
-            - traefik
-        expose:
-            - 8989
-        restart: always
-
-    radarr:
-        image: linuxserver/radarr:latest
-        container_name: radarr
-        volumes:
-            - /mnt/media/@data/radarr/config:/config
-            - /mnt/media/@data/Media/Movies:/movies
-            - /mnt/media/@data/nzbget/downloads:/downloads
-            - /etc/localtime:/etc/localtime:ro
-        environment:
-            - PUID=1000
-            - PGID=1000
-            - TZ=America/New_York
-        labels:
-            - traefik.backend=radarr
-            - traefik.frontend.rule=Host:radarr.${DOMAIN}
-            - traefik.docker.network=traefik
-            - traefik.port=7878
-        networks:
-            - traefik
-        expose:
-            - 7878
-        restart: always
-
-# Downloaders
-
-    nzbget:
-        image: linuxserver/nzbget:latest
-        container_name: nzbget
-        volumes:
-            - /mnt/media/@data/nzbget/config:/config
-            - /mnt/media/@data/nzbget/downloads:/downloads
-        environment:
-            - PUID=1000
-            - PGID=1000
-            - TZ=America/New_York
-        labels:
-            - traefik.backend=nzbget
-            - traefik.frontend.rule=Host:nzbget.${DOMAIN}
-            - traefik.docker.network=traefik
-            - traefik.port=6789
-        networks:
-            - traefik
-        expose:
-            - 6789
-        restart: always
-
-    deluge:
-        image: linuxserver/deluge:latest
-        container_name: deluge
-        volumes:
-            - /mnt/media/@data/deluge/downloads:/downloads
-            - /mnt/media/@data/deluge/config:/config
-        environment:
-            - PUID=1000
-            - PGID=1000
-            - TZ=America/New_York
-        network_mode: "service:vpnclient"
-        stdin_open: true
-        tty: true
-        restart: always
-
-    deluge_nginx:
-        image: dperson/nginx
-        container_name: delugeproxy
-        depends_on:
-            - deluge
-        environment:
-            TZ: America/New_York
-        links:
-            - vpnclient:deluge
-        labels:
-            - traefik.backend=deluge_nginx
-            - traefik.frontend.rule=Host:deluge.${DOMAIN}
-            - traefik.docker.network=traefik
-            - traefik.port=80
-        networks:
-            - default
-            - traefik
-        expose:
-            - 80
-        read_only: true
-        tmpfs:
-            - /run
-            - /tmp
-            - /var/cache/nginx
-        restart: always
-        stdin_open: true
-        tty: true
-        command: -w "http://deluge:8112;/"
-
-    vpnclient: # route deluge through vpn
-        image: dperson/openvpn-client
-        # https://github.com/dperson/openvpn-client
-        container_name: vpnclient
-        # cap_add, security_opt, and volume required for the image to function
-        cap_add:
-            - net_admin
-        security_opt:
-            - label:disable
-        volumes:
-            - /dev/net:/dev/net:z
-            - /mnt/media/@data/vpnclient/ovpn:/vpn
-            - /mnt/media/@data/vpnclient/credentials:/etc/openvpn/credentials
-        environment:
-            TZ: America/New_York
-        networks:
-            - default
-        dns:
-            - 8.8.8.8
-            - 8.8.4.4
-        read_only: true
-        tmpfs:
-            - /tmp
-        restart: always
-        stdin_open: true
-        tty: true
-
-# Indexers
-
-    hydra:
-        image: linuxserver/hydra:latest
-        container_name: hydra
-        volumes:
-            - /mnt/media/@data/hydra/config:/config
-            - /mnt/media/@data/nzbget/downloads:/downloads
-        environment:
-            - PUID=1000
-            - PGID=1000
-            - TZ=America/New_York
-        labels:
-            - traefik.backend=hydra
-            - traefik.frontend.rule=Host:hydra.${DOMAIN}
-            - traefik.docker.network=traefik
-        networks:
-            - traefik
-        expose:
-            - 5075
-        restart: always
-
-    jackett:
-        image: linuxserver/jackett:latest
-        container_name: jackett
-        volumes:
-            - /mnt/media/@data/jackett/config:/config
-            - /mnt/media/@data/jackett/downloads:/downloads
-            - /etc/localtime:/etc/localtime:ro
-        environment:
-            - PUID=1000
-            - PGID=1000
-            - TZ=America/New_York
-        labels:
-            - traefik.backend=jackett
-            - traefik.frontend.rule=Host:jackett.${DOMAIN}
-            - traefik.docker.network=traefik
-            - traefik.port=9117
-        networks:
-            - traefik
-        expose:
-            - 9117
-        restart: always
-
-# Traefik
-
-    traefik:
-        image: traefik:latest
-        container_name: traefik
-        volumes:
-          - /var/run/docker.sock:/var/run/docker.sock
-          - /mnt/media/@data/traefik/traefik.toml:/traefik.toml
-          - /mnt/media/@data/traefik/acme.json:/acme.json
-        labels:
-            - traefik.backend=traefik
-            - traefik.frontend.rule=Host:traefik.${DOMAIN}
-            - traefik.docker.network=traefik
-            - traefik.port=8080
-        networks:
-          - traefik
-        ports:
-          - 80:80
-          - 443:443
-        expose:
-          - 8080
-        restart: always
-
-networks:
-    default:
-    traefik:
-        external: true
+      image: plexinc/pms-docker
+      container_name: plex
+      volumes:
+        - /mnt/tub/data/movies:/data/movies
+        - /mnt/tub/data/tv:/data/tv
+        - /mnt/tub/data/music:/data/music
+        - /mnt/tub/config/plex:/config
+        - /transcode:/transcode
+      restart: unless-stopped
+      network_mode: "host"
+    updates:
+      image: v2tec/watchtower
+      container_name: watchtower
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+      restart: always
+      command: --interval 30
+    management:
+      image: portainer/portainer
+      container_name: portainer
+      volumes:
+        - /opt/acidbox/portainer:/data
+        - /var/run/docker.sock:/var/run/docker.sock
+      restart: always
+    
