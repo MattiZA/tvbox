@@ -67,13 +67,12 @@ services:
         - /mnt/tub/data/download/complete:/downloads
       restart: unless-stopped
       ports:
-        - 9090:9090
         - 8080:8080
     deluge:
       image: linuxserver/deluge
       container_name: deluge
       volumes:
-        - /mnt/tub/config/sabnzbd:/config
+        - /mnt/tub/config/deluge:/config
         - /mnt/tub/data/download/incomplete:/downloads/incomplete
         - /mnt/tub/data/download/complete:/downloads/complete
         - /mnt/tub/data/download/blackhole:/downloads/blackhole
