@@ -44,7 +44,7 @@ services:
         - /mnt/tub/config/sonarr:/config
         - /mnt/tub/data/tv:/tv
         - /etc/localtime:/etc/localtime:ro
-        - /mnt/tub/data/download/complete/tv:/downloads
+        - /mnt/tub/data/download/complete:/downloads
       restart: unless-stopped
       ports:
         - 8989:8989
@@ -54,7 +54,7 @@ services:
       volumes:
         - /mnt/tub/config/couchpotato:/config
         - /mnt/tub/data/movies:/movies
-        - /mnt/tub/data/download/complete/movies:/downloads
+        - /mnt/tub/data/download/complete:/downloads
       restart: unless-stopped
       ports:
         - 5050:5050
