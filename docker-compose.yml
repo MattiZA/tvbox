@@ -1,0 +1,37 @@
+version: "3"
+services:
+    dashboard:
+      image: linuxserver/heimdall
+      container_name: dashboard
+      volumes:
+        - /mnt/tub/config/heimdall:/config
+      restart: always
+    plex:
+      image: plexinc/pms-docker
+      container_name: plex
+      volumes:
+        - /mnt/tub/data/movies:/data/movies
+        - /mnt/tub/data/tv:/data/tv
+        - /mnt/tub/data/music:/data/music
+        - /mnt/tub/config/plex:/config
+        - /transcode:/transcode
+      restart: unless-stopped
+      net: "host"
+    updates:
+      image: v2tec/watchtower
+      container_name: watchtower
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+      restart: always
+      command: --interval 30
+    management:
+      image: portainer/portainer
+      container_name: portainer
+      volumes:
+        - /opt/acidbox/portainer:/data
+        - /var/run/docker.sock:/var/run/docker.sock
+      restart: always
+networks:
+  default:
+    external:
+     name: acidbox
