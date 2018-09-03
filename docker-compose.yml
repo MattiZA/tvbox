@@ -16,7 +16,7 @@ services:
         - /mnt/tub/config/plex:/config
         - /transcode:/transcode
       restart: unless-stopped
-      net: "host"
+      network_mode: "host"
     updates:
       image: v2tec/watchtower
       container_name: watchtower
