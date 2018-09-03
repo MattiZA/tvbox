@@ -80,6 +80,7 @@ services:
       restart: unless-stopped
       ports:
         - 8112:8112
+        - 58846:58846
     updates:
       image: v2tec/watchtower
       container_name: watchtower
