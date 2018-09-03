@@ -13,7 +13,7 @@ services:
       image: linuxserver/heimdall
       container_name: heimdall
       volumes:
-        - /mnt/tub/config/heimdall:/config
+        - /mnt/tub/config/heimdall:/config 
       ports:
         - 80:80
         - 443:443
