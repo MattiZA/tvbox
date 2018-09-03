@@ -55,7 +55,7 @@ services:
       volumes:
         - /mnt/tub/config/couchpotato:/config
         - /mnt/tub/data/movies:/movies
-        - /mnt/tub/data/download/sabnzbd/complete/movies:/downloads
+        - /mnt/tub/data/download/deluge/complete/movies:/downloads
       restart: unless-stopped
       ports:
         - 5050:5050
@@ -69,6 +69,7 @@ services:
       restart: unless-stopped
       ports:
         - 9090:9090
+        - 8080:8080
     deluge:
       image: linuxserver/deluge
       container_name: deluge
