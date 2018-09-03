@@ -1,5 +1,15 @@
 version: "3"
 services:
+    share:
+      image: dperson/samba
+      container_name: samba
+      volumes:
+        - /mnt/tub:/mount
+        - /var/run/docker.sock:/var/run/docker.sock
+      ports:
+        - 139:139
+        - 445:445
+      restart: always
     dashboard:
       image: linuxserver/heimdall
       container_name: dashboard
@@ -31,3 +41,4 @@ services:
         - /opt/acidbox/portainer:/data
         - /var/run/docker.sock:/var/run/docker.sock
       restart: always
+    
