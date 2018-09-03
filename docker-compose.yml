@@ -29,6 +29,15 @@ services:
         - /mnt/tub/data/transcode:/transcode
       restart: unless-stopped
       network_mode: "host"
+    plexpy:
+      image: tautulli/tautulli
+      container_name: plexpy
+      volumes:
+        - /mnt/tub/config/plexpy:/config
+        - /mnt/tub/config/plex:/plex_logs:ro
+      restart: unless-stopped
+      ports:
+        - 8181:8181
     updates:
       image: v2tec/watchtower
       container_name: watchtower
@@ -45,12 +54,4 @@ services:
       ports:
         - 9000:9000
       restart: always
-    plexpy:
-      image: tautulli/tautulli
-      container_name: plexpy
-      volumes:
-        - /mnt/tub/config/plexpy:/config
-        - /mnt/tub/config/plex:/plex_logs:ro
-      restart: unless-stopped
-      ports:
-        - 8181:8181
+    
