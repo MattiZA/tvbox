@@ -74,9 +74,9 @@ services:
       container_name: deluge
       volumes:
         - /mnt/tub/config/sabnzbd:/config
-        - /mnt/tub/data/download/deluge/incomplete:/downloads
-        - /mnt/tub/data/download/deluge/complete:/complete
-        - /mnt/tub/data/blackhole:/blackhole
+        - /mnt/tub/data/download/deluge/incomplete:/downloads/incomplete
+        - /mnt/tub/data/download/deluge/complete:/downloads/complete
+        - /mnt/tub/data/blackhole:/downloads/blackhole
       restart: unless-stopped
       ports:
         - 8112:8112
