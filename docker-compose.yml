@@ -79,7 +79,7 @@ services:
         - /mnt/tub/data/blackhole:/blackhole
       restart: unless-stopped
       ports:
-        - 9090:9090
+        - 8112:8112
     updates:
       image: v2tec/watchtower
       container_name: watchtower
