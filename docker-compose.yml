@@ -26,7 +26,7 @@ services:
         - /mnt/tub/data/tv:/data/tv
         - /mnt/tub/data/music:/data/music
         - /mnt/tub/config/plex:/config
-        - /transcode:/transcode
+        - /mnt/tub/data/transcode:/transcode
       restart: unless-stopped
       network_mode: "host"
     updates:
@@ -40,7 +40,7 @@ services:
       image: portainer/portainer
       container_name: portainer
       volumes:
-        - /opt/acidbox/portainer:/data
+        - /mnt/tub/config/portainer:/data
         - /var/run/docker.sock:/var/run/docker.sock
       restart: always
     
