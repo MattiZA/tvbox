@@ -45,10 +45,31 @@ services:
         - /mnt/tub/config/sonarr:/config
         - /mnt/tub/data/tv:/tv
         - /etc/localtime:/etc/localtime:ro
-        - /mnt/tub/data/download/deluge/complete:/downloads
+        - /mnt/tub/data/download/sabnzbd/complete/tv:/downloads
       restart: unless-stopped
       ports:
         - 8989:8989
+    couchpotato:
+      image: linuxserver/couchpotato
+      container_name: couchpotato
+      volumes:
+        - /mnt/tub/config/couchpotato:/config
+        - /mnt/tub/data/movies:/tv
+        - /mnt/tub/data/download/sabnzbd/complete/movies:/downloads
+      restart: unless-stopped
+      ports:
+        - 5050:5050
+    sabnzbd:
+      image: linuxserver/sabnzbd
+      container_name: sabnzbd
+      volumes:
+        - /mnt/tub/config/sabnzbd:/config
+        - /mnt/tub/data/download/sabnzbd/incomplete:/incomplete-downloads
+        - /mnt/tub/data/download/sabnzbd/complete:/downloads
+      restart: unless-stopped
+      ports:
+        - 8080:8080
+        - 9090:9090
     updates:
       image: v2tec/watchtower
       container_name: watchtower
