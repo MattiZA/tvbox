@@ -34,7 +34,7 @@ services:
       container_name: plexpy
       volumes:
         - /mnt/tub/config/plexpy:/config
-        - /mnt/tub/config/plex:/plex_logs:ro
+        - /mnt/tub/config/plex/Library/Application\ Support/Plex\ Media\ Server/Logs/:/plex_logs:ro
       restart: unless-stopped
       ports:
         - 8181:8181
