@@ -11,11 +11,12 @@ services:
       restart: always
     dashboard:
       image: linuxserver/heimdall
-      container_name: dashboard
+      container_name: heimdall
       volumes:
         - /mnt/tub/config/heimdall:/config
       ports:
         - 80:80
+        - 443:443
       restart: always
     plex:
       image: plexinc/pms-docker
