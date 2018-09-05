@@ -80,6 +80,16 @@ services:
       ports:
         - 8112:8112
         - 58846:58846
+    no-ip:
+      image: coppit/no-ip
+      container_name: no-ip
+      volumes:
+        - /etc/localtime:/etc/localtime:ro
+        - /mnt/tub/config/no-ip:/config
+      environment:
+        - USERNAME=legsopenwild
+        - PASSWORD=Colt1911
+        - DOMAINS=myforays.ddns.net
     updates:
       image: v2tec/watchtower
       container_name: watchtower
