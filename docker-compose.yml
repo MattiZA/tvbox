@@ -1,19 +1,10 @@
 version: "2"
 services:
-    share:
-      image: dperson/samba
-      container_name: samba
-      volumes:
-        - /mnt/tub:/mount
-      ports:
-        - 139:139
-        - 445:445
-      restart: always
     dashboard:
       image: linuxserver/heimdall
       container_name: heimdall
       volumes:
-        - /mnt/tub/config/heimdall:/config 
+        - /opt/tvbox/config/heimdall:/config 
       ports:
         - 5000:80
       restart: always
@@ -21,19 +12,19 @@ services:
       image: plexinc/pms-docker
       container_name: plex
       volumes:
-        - /mnt/tub/data/movies:/data/movies
-        - /mnt/tub/data/tv:/data/tv
-        - /mnt/tub/data/music:/data/music
-        - /mnt/tub/config/plex:/config
-        - /mnt/tub/data/transcode:/transcode
+        - /opt/tvbox/data/movies:/data/movies
+        - /opt/tvbox/data/tv:/data/tv
+        - /opt/tvbox/data/music:/data/music
+        - /opt/tvbox/config/plex:/config
+        - /opt/tvbox/data/transcode:/transcode
       restart: unless-stopped
       network_mode: "host"
     plexpy:
       image: tautulli/tautulli
       container_name: plexpy
       volumes:
-        - /mnt/tub/config/plexpy:/config
-        - /mnt/tub/config/plex/Library/Application\ Support/Plex\ Media\ Server/Logs/:/plex_logs:ro
+        - /opt/tvbox/config/plexpy:/config
+        - /opt/tvbox/config/plex/Library/Application\ Support/Plex\ Media\ Server/Logs/:/plex_logs:ro
       restart: unless-stopped
       ports:
         - 8181:8181
@@ -41,55 +32,36 @@ services:
       image: linuxserver/sonarr
       container_name: sonarr
       volumes:
-        - /mnt/tub/config/sonarr:/config
-        - /mnt/tub/data/tv:/tv
+        - /opt/tvbox/config/sonarr:/config
+        - /opt/tvbox/data/tv:/tv
         - /etc/localtime:/etc/localtime:ro
-        - /mnt/tub/data/download/complete:/downloads
+        - /opt/tvbox/data/download/complete:/downloads
       restart: unless-stopped
       ports:
         - 8989:8989
-    couchpotato:
-      image: linuxserver/couchpotato
-      container_name: couchpotato
-      volumes:
-        - /mnt/tub/config/couchpotato:/config
-        - /mnt/tub/data/movies:/movies
-        - /mnt/tub/data/download/complete:/downloads
-      restart: unless-stopped
-      ports:
-        - 5050:5050
-    sabnzbd:
-      image: linuxserver/sabnzbd
-      container_name: sabnzbd
-      volumes:
-        - /mnt/tub/config/sabnzbd:/config
-        - /mnt/tub/data/download/incomplete:/incomplete-downloads
-        - /mnt/tub/data/download/complete:/downloads
-      restart: unless-stopped
-      ports:
-        - 8080:8080
+    radarr:
+       image: linuxserver/radarr
+       container_name: radarr
+       volumes:
+        - /opt/tvbox/config/radarr:/config
+        - /opt/tvbox/data/movies:/movies
+        - /etc/localtime:/etc/localtime:ro
+        - /opt/tvbox/data/download/complete:/downloads
+       restart: unless-stopped
+       ports:
+        - 7878:7878
     deluge:
       image: linuxserver/deluge
       container_name: deluge
       volumes:
-        - /mnt/tub/config/deluge:/config
-        - /mnt/tub/data/download/incomplete:/downloads/incomplete
-        - /mnt/tub/data/download/complete:/downloads/complete
-        - /mnt/tub/data/download/blackhole:/downloads/blackhole
+        - /opt/tvbox/config/deluge:/config
+        - /opt/tvbox/data/download/incomplete:/downloads/incomplete
+        - /opt/tvbox/data/download/complete:/downloads/complete
+        - /opt/tvbox/data/download/blackhole:/downloads/blackhole
       restart: unless-stopped
       ports:
         - 8112:8112
         - 58846:58846
-    no-ip:
-      image: coppit/no-ip
-      container_name: no-ip
-      volumes:
-        - /etc/localtime:/etc/localtime:ro
-        - /mnt/tub/config/no-ip:/config
-      environment:
-        - USERNAME=legsopenwild
-        - PASSWORD=Colt1911
-        - DOMAINS=myforays.ddns.net
     updates:
       image: v2tec/watchtower
       container_name: watchtower
@@ -101,9 +73,8 @@ services:
       image: portainer/portainer
       container_name: portainer
       volumes:
-        - /mnt/tub/config/portainer:/data
+        - /opt/tvbox/config/portainer:/data
         - /var/run/docker.sock:/var/run/docker.sock
       ports:
         - 9000:9000
       restart: always
-    
