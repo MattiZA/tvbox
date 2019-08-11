@@ -4,7 +4,7 @@ services:
       image: linuxserver/heimdall
       container_name: heimdall
       volumes:
-        - /opt/tvbox/config/heimdall:/config 
+        - /home/$USER/tvbox/config/heimdall:/config 
       ports:
         - 5000:80
       restart: always
@@ -15,16 +15,16 @@ services:
         - /opt/tvbox/data/movies:/data/movies
         - /opt/tvbox/data/tv:/data/tv
         - /opt/tvbox/data/music:/data/music
-        - /opt/tvbox/config/plex:/config
-        - /opt/tvbox/data/transcode:/transcode
+        - /home/$USER/tvbox/config/plex:/config
+        - /home/$USER/tvbox/data/transcode:/transcode
       restart: unless-stopped
       network_mode: "host"
     plexpy:
       image: tautulli/tautulli
       container_name: plexpy
       volumes:
-        - /opt/tvbox/config/plexpy:/config
-        - /opt/tvbox/config/plex/Library/Application\ Support/Plex\ Media\ Server/Logs/:/plex_logs:ro
+        - /home/$USER/tvbox/config/plexpy:/config
+        - /home/$USER/tvbox/config/plex/Library/Application\ Support/Plex\ Media\ Server/Logs/:/plex_logs:ro
       restart: unless-stopped
       ports:
         - 8181:8181
@@ -32,7 +32,7 @@ services:
       image: linuxserver/sonarr
       container_name: sonarr
       volumes:
-        - /opt/tvbox/config/sonarr:/config
+        - /home/$USER/tvbox/config/sonarr:/config
         - /opt/tvbox/data/tv:/tv
         - /etc/localtime:/etc/localtime:ro
         - /opt/tvbox/data/download/complete:/downloads
@@ -43,7 +43,7 @@ services:
        image: linuxserver/radarr
        container_name: radarr
        volumes:
-        - /opt/tvbox/config/radarr:/config
+        - /home/$USER/tvbox/config/radarr:/config
         - /opt/tvbox/data/movies:/movies
         - /etc/localtime:/etc/localtime:ro
         - /opt/tvbox/data/download/complete:/downloads
@@ -54,7 +54,7 @@ services:
       image: linuxserver/deluge
       container_name: deluge
       volumes:
-        - /opt/tvbox/config/deluge:/config
+        - /home/$USER/tvbox/config/deluge:/config
         - /opt/tvbox/data/download/incomplete:/downloads/incomplete
         - /opt/tvbox/data/download/complete:/downloads/complete
         - /opt/tvbox/data/download/blackhole:/downloads/blackhole
@@ -73,7 +73,7 @@ services:
       image: portainer/portainer
       container_name: portainer
       volumes:
-        - /opt/tvbox/config/portainer:/data
+        - /home/$USER/tvbox/config/portainer:/data
         - /var/run/docker.sock:/var/run/docker.sock
       ports:
         - 9000:9000
