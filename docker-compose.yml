@@ -56,9 +56,9 @@ services:
       volumes:
         - /home/$USER/tvbox/config/sabznbd:/config
         - /opt/tvbox/download/incomplete:/downloads/incomplete
-    ports:
+      ports:
         - 8080:8080
-    restart: unless_stopped
+      restart: unless_stopped
     updates:
       image: v2tec/watchtower
       container_name: watchtower
