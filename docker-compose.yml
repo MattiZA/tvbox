@@ -6,15 +6,15 @@ services:
       volumes:
         - /home/$USER/tvbox/config/heimdall:/config 
       ports:
-        - 5000:80
+        - 80:80
       restart: always
     plex:
       image: plexinc/pms-docker
       container_name: plex
       volumes:
-        - /opt/tvbox/data/movies:/data/movies
-        - /opt/tvbox/data/tv:/data/tv
-        - /opt/tvbox/data/music:/data/music
+        - /opt/tvbox/movies:/data/movies
+        - /opt/tvbox/tv:/data/tv
+        - /opt/tvbox/music:/data/music
         - /home/$USER/tvbox/config/plex:/config
         - /home/$USER/tvbox/data/transcode:/transcode
       restart: unless-stopped
@@ -33,9 +33,9 @@ services:
       container_name: sonarr
       volumes:
         - /home/$USER/tvbox/config/sonarr:/config
-        - /opt/tvbox/data/tv:/tv
+        - /opt/tvbox/tv:/tv
         - /etc/localtime:/etc/localtime:ro
-        - /opt/tvbox/data/download/complete:/downloads
+        - /opt/tvbox/download/complete:/downloads
       restart: unless-stopped
       ports:
         - 8989:8989
@@ -44,24 +44,21 @@ services:
        container_name: radarr
        volumes:
         - /home/$USER/tvbox/config/radarr:/config
-        - /opt/tvbox/data/movies:/movies
+        - /opt/tvbox/movies:/movies
         - /etc/localtime:/etc/localtime:ro
-        - /opt/tvbox/data/download/complete:/downloads
+        - /opt/tvbox/download/complete:/downloads
        restart: unless-stopped
        ports:
         - 7878:7878
-    deluge:
-      image: linuxserver/deluge
-      container_name: deluge
+    sabnzbd:
+      image: linuxserver/sabnzbd
+      container_name: sabnzbd
       volumes:
-        - /home/$USER/tvbox/config/deluge:/config
-        - /opt/tvbox/data/download/incomplete:/downloads/incomplete
-        - /opt/tvbox/data/download/complete:/downloads/complete
-        - /opt/tvbox/data/download/blackhole:/downloads/blackhole
-      restart: unless-stopped
-      ports:
-        - 8112:8112
-        - 58846:58846
+        - /home/$USER/tvbox/config/sabznbd:/config
+        - /opt/tvbox/download/incomplete:/downloads/incomplete
+    ports:
+        - 8080:8080
+    restart: unless_stopped
     updates:
       image: v2tec/watchtower
       container_name: watchtower
